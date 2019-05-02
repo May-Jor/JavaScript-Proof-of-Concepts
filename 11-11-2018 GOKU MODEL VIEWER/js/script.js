@@ -42,11 +42,11 @@ mtlLoader.load("models/Goku/Goku.mtl", function (materials) {
 
 //animation function
 var animate = function () {
-
-	requestAnimationFrame( animate );
+	
 	currentMesh.rotateY(.01);
 	controls.update();
 	renderer.render( scene, camera );
+	requestAnimationFrame( animate );
 
 };
 
