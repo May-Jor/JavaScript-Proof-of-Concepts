@@ -1,0 +1,102 @@
+<!DOCTPYE html>
+<html>
+	<head>
+		<title>11-12-2018 - JS MIC</title>
+		<style>
+			body {
+				margin: 0 auto;
+				padding: 0;
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<!-- 
+			Becuase of GOogles upfate : POST 66 : I can no longer use the paly and pause features of a vidoe with audio
+				So it was either not have audio, which would be dumb for this project,or hide the video until the user interacted with the DOM
+		-->
+		<button class="button">SHOW VIDEO</button>
+		<div class="container">
+			<video src="video/GOKU.mp4" id="video"></video>
+		</div>
+		<canvas id="canvas" height="100" width="600"></canvas>
+		<p>SCREAM YOUR HEART OUT TO POWER UP GOKU!</p>
+		<!--
+				These scripts are now being dynamically loaded to adhere to the new way googel handles audio
+
+		<script type="text/javascript" src="js/p5.js"></script>
+		<script type="text/javascript" src="js/p5sound.js"></script>
+		-->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script type="text/javascript" src="js/script.js"></script>
+		<script type="text/javascript">
+			var vid = document.getElementById('video');
+			//take 80% of window to keep all elements on screen, without scrollbars :)
+			let width = window.innerWidth * .80;
+			//sert height correctly to keep aspect ratio
+			let height = (width / 16) * 9;
+			vid.setAttribute("width", width);
+			vid.setAttribute("height", height);
+
+			//JQUERY HIDE AND SHOW, to get around google's no sound video autoplay policy
+			$(document).ready(function(){
+				$("div").hide();
+			    $("button").click(function(){
+			        $(this).hide();
+			        $("div").show();
+			        ;
+			        if(dynamicallyLoadScript("js/p5sound.js") && dynamicallyLoadScript("js/p5.js")){
+			        	var mic;
+					mic = new p5.AudioIn();
+					  // start the Audio Input.
+					  // By default, it does not .connect() (to the computer speakers)
+					mic.resume();
+					var vol;
+					//listens to mic, if threshold is hit, play video
+					var listen = setInterval(function(){
+					  // Get the overall volume (between 0 and 1.0)
+					  vol = Math.pow(mic.getLevel() * 500, 2);
+					  if(vol >= 550){
+					    console.log(vol);
+					    vid.play();
+					  }
+					  else{
+					    vid.pause();
+					  }
+					  console.log(vol);
+					  drawMIC();
+					}, 1);
+
+					//canvas stuff
+					var canvas = document.getElementById("canvas");    
+					var c = canvas.getContext("2d");
+			        }
+			        
+					
+			    });
+			});
+			   //function to draw mic input visual
+					function drawMIC(){
+					  c.fillStyle = "black";
+					  c.fillRect(0,0,canvas.width, canvas.height);
+					  c.clearRect(10,10,canvas.width-20, canvas.height-20);
+					  var grd = c.createLinearGradient(0,0,600,0);
+					  grd.addColorStop(1,"red");
+					  grd.addColorStop(0,"green");
+					  c.fillStyle = grd;
+					  if(vol >= canvas.width-20){
+					    c.fillRect(10, 10, 580, canvas.height-20);
+					  }
+					   else{
+					    c.fillRect(10, 10, vol, canvas.height-20);
+					  }   
+					}
+			function dynamicallyLoadScript(url) {
+			    var script = document.createElement("script");  // create a script DOM node
+			    script.src = url;  // set its src to the provided URL
+
+			    document.body.appendChild(script);  // add it to the end of the head section of the page (could change 'head' to 'body' to add it to the end of the body section instead)
+			}
+		</script>
+	</body>
+</html>
